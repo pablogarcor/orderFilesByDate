@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+from collections import defaultdict
 
 
 # This is a sample Python script.
@@ -15,19 +16,27 @@ def print_hi(name):
 
 def get_files_route_with_mod_date(directory):
     directory_files = os.listdir(directory)
-    files_list = []
+    file_list = []
     for file in directory_files:
         file_route = "/".join([directory, file])
         file_info = os.lstat(file_route)
-        file_date_string = datetime.fromtimestamp(file_info.st_mtime).strftime("%Y/%m/%d")
-        files_list.append({'file_route': file_route, 'last_mod_date': file_date_string})
-        print(f'El fichero: {file}\nTiene esta fecha: {file_date_string}')
-    print(files_list)
+        file_date_string = datetime.fromtimestamp(file_info.st_mtime).strftime("%Y-%m-%d")
+        file_list.append({'file_name': file, 'last_mod_date': file_date_string})
+
+    files_by_date = defaultdict(list)
+    for file in file_list:
+        files_by_date[file['last_mod_date']].append(file)
+
+    return files_by_date
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    get_files_route_with_mod_date('../test')
+    dir_name = '../test'
+    file_list = get_files_route_with_mod_date(dir_name)
+    for r in file_list:
+        date_dir_name = '/'.join([dir_name, r])
+        os.mkdir(date_dir_name)
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
 
