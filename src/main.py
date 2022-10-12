@@ -1,6 +1,7 @@
 import os
 from datetime import datetime
 from collections import defaultdict
+import shutil
 
 
 # This is a sample Python script.
@@ -37,6 +38,11 @@ if __name__ == '__main__':
     for r in file_list:
         date_dir_name = '/'.join([dir_name, r])
         os.mkdir(date_dir_name)
+        for file in file_list[r]:
+            source_file = '/'.join([dir_name, file['file_name']])
+            destination_file = '/'.join([dir_name, r, file['file_name']])
+            shutil.move(source_file, destination_file)
+
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
 
