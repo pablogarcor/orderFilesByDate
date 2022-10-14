@@ -16,6 +16,7 @@ def print_hi(name):
 
 
 def get_files_route_with_mod_date(directory):
+    print(directory)
     directory_files = os.listdir(directory)
     file_list = []
     for file in directory_files:
@@ -33,7 +34,7 @@ def get_files_route_with_mod_date(directory):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    dir_name = '../test'
+    dir_name = os.path.abspath('test')
     file_list = get_files_route_with_mod_date(dir_name)
     for r in file_list:
         date_dir_name = '/'.join([dir_name, r])
@@ -41,7 +42,11 @@ if __name__ == '__main__':
         for file in file_list[r]:
             source_file = '/'.join([dir_name, file['file_name']])
             destination_file = '/'.join([dir_name, r, file['file_name']])
-            shutil.move(source_file, destination_file)
+            try:
+                shutil.move(source_file, destination_file)
+            except shutil.Error as e:
+                for src, dst, msg in e.args[0]:
+                    print(dst, src, msg)
 
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
