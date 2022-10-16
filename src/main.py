@@ -1,4 +1,5 @@
 import os
+import re
 from datetime import datetime
 from collections import defaultdict
 import shutil
@@ -16,7 +17,6 @@ def print_hi(name):
 
 
 def get_files_route_with_mod_date(directory):
-    print(directory)
     directory_files = os.listdir(directory)
     file_list = []
     for file in directory_files:
@@ -34,20 +34,23 @@ def get_files_route_with_mod_date(directory):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    dir_name = os.path.abspath('test')
+    date_regex = re.compile(r'\d\d\d\d-\d\d-\d\d')
+    dir_name = os.path.abspath('../test')
     file_list = get_files_route_with_mod_date(dir_name)
     for r in file_list:
         date_dir_name = '/'.join([dir_name, r])
-        os.mkdir(date_dir_name)
+        try:
+            os.mkdir(date_dir_name)
+        except FileExistsError as e:
+            print("os.mkdir error:", e.args[0])
         for file in file_list[r]:
-            source_file = '/'.join([dir_name, file['file_name']])
-            destination_file = '/'.join([dir_name, r, file['file_name']])
-            try:
-                shutil.move(source_file, destination_file)
-            except shutil.Error as e:
-                for src, dst, msg in e.args[0]:
-                    print(dst, src, msg)
-
+            if not re.search(date_regex, file['file_name']):
+                source_file = '/'.join([dir_name, file['file_name']])
+                destination_file = '/'.join([dir_name, r, file['file_name']])
+                try:
+                    shutil.move(source_file, destination_file)
+                except shutil.Error as e:
+                    print('shutil.move error:', e.args[0])
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
 
