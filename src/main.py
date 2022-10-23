@@ -21,8 +21,8 @@ def get_files_route_with_mod_date(directory):
     directory_files = os.listdir(directory)
     file_list = []
     for file in directory_files:
-        if not re.search(date_regex, file):
-            file_route = "/".join([directory, file])
+        file_route = "/".join([directory, file])
+        if ((not re.search(date_regex, file)) and os.path.isdir(file_route)) or os.path.isfile(file_route):
             file_info = os.lstat(file_route)
             file_date_string = datetime.fromtimestamp(file_info.st_mtime).strftime("%Y-%m-%d")
             file_list.append({'file_name': file, 'last_mod_date': file_date_string})
@@ -46,8 +46,8 @@ if __name__ == '__main__':
         except FileExistsError as e:
             print("os.mkdir error:", e.args[0])
         for file in file_list[r]:
-            if not re.search(date_regex, file['file_name']):
-                source_file = '/'.join([dir_name, file['file_name']])
+            source_file = '/'.join([dir_name, file['file_name']])
+            if ((not re.search(date_regex, file['file_name'])) and os.path.isdir(source_file)) or os.path.isfile(source_file):
                 destination_file = '/'.join([dir_name, r, file['file_name']])
                 try:
                     shutil.move(source_file, destination_file)
