@@ -17,13 +17,15 @@ def print_hi(name):
 
 
 def get_files_route_with_mod_date(directory):
+    date_regex = re.compile(r'\d\d\d\d-\d\d-\d\d')
     directory_files = os.listdir(directory)
     file_list = []
     for file in directory_files:
-        file_route = "/".join([directory, file])
-        file_info = os.lstat(file_route)
-        file_date_string = datetime.fromtimestamp(file_info.st_mtime).strftime("%Y-%m-%d")
-        file_list.append({'file_name': file, 'last_mod_date': file_date_string})
+        if not re.search(date_regex, file):
+            file_route = "/".join([directory, file])
+            file_info = os.lstat(file_route)
+            file_date_string = datetime.fromtimestamp(file_info.st_mtime).strftime("%Y-%m-%d")
+            file_list.append({'file_name': file, 'last_mod_date': file_date_string})
 
     files_by_date = defaultdict(list)
     for file in file_list:
